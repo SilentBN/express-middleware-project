@@ -1,9 +1,22 @@
+const Users = require("../users/users-model.js");
+
 function logger(req, res, next) {
-  // DO YOUR MAGIC
+  console.log(`[${new Date().toISOString()}] ${req.method} to ${req.url}`);
+  next();
 }
 
-function validateUserId(req, res, next) {
-  // DO YOUR MAGIC
+async function validateUserId(req, res, next) {
+  try {
+    const user = await Users.getById(req.params.id);
+    if (user) {
+      req.user = user;
+      next();
+    } else {
+      res.status(404).json({ message: "user not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "error retrieving user" });
+  }
 }
 
 function validateUser(req, res, next) {
